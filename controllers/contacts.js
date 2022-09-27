@@ -1,33 +1,35 @@
+const getDB = require("../model/connect");
+const { ObjectId } = require("mongodb");
 
-const mongodb = require('../model/connect');
-const ObjectId = require('mongodb').ObjectId;
+const index = async (req, res) => {
+  const { firstName } = req.query;
 
-const getOne = async (req, res, next) => {
-    const userId = new ObjectId(req.params.id);
-    // const database = client.db(process.env.DB_NAME);
-    const contacts = database.collection("contacts");
-    const result = await mongodb
-        .getDb()
-        .db(process.env.DB_NAME)
-        .collection(contacts)
-        .find();
-        console.log(result);
-    result.toArray().then((lists) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(lists[0]);
+  const filter = Object.fromEntries(
+    Object.entries({ firstName }).filter(([_k, v]) => v)
+  );
 
-    });
+  const collection = await _collection();
+  const documents = await collection.find(filter).toArray();
+
+  res.json(documents);
 };
 
-const getAll = async (req, res, next) => {
-    const result = await mongodb.getDb().db(process.env.DB_NAME).collection('contacts').find();
-    result.toArray().then((lists) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(lists);
-    });
+const show = async (req, res) => {
+  const collection = await _collection();
+  const document = await collection
+    .find({ _id: ObjectId(req.params.id) })
+    .toArray();
+  console.log(req.params.id)
+  res.json(document[0]);
 };
 
-module.exports = {
-    getOne,
-    getAll
-}
+const _collection = async () => {
+  try {
+    const db = await getDB();
+    return db.collection("contacts");
+  } catch (error) {
+    console.error("Error getting contacts collection", error);
+  }
+};
+
+module.exports = { index, show };

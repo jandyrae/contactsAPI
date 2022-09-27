@@ -2,9 +2,7 @@ const express = require("express");
 const config = require("./config/index");
 const bodyParser = require('body-parser');
 const app = express();
-const {
-  routes
-} = require("./routes/index");
+
 const port = config.PORT || 8080;
 const connectDB = require('./model/connect')
 // const {
@@ -21,7 +19,7 @@ app
     next();
   })
   .use('/', require('./routes'));
-// app.use(bodyParser.json())
+
 //     app.use("/", (req, res, next) => {
 //         res.setHeader("Access-Control-Allow-Origin", "*");
 //         res.json(allData)
@@ -40,7 +38,7 @@ app
 // const { data } = require("./controllers");
 
 
-app.route("/", routes);
+// app.route("/", routes);
 
 app.listen(port, () => {
   console.log(`Application listening on http://localhost:8080/contacts  or ${port}`);
